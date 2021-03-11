@@ -25,8 +25,8 @@
 
 This demo is a single use-case implying:
 
-* 👥 **dev** teams that develop Web applications
-* 👤 an **ops** team that manages the whole _Cloud_ platform
+- 👥 **dev** teams that develop Web applications
+- 👤 an **ops** team that manages the whole _Cloud_ platform
 
 🎯 The whole thing is to demonstrate a kind of _infra-as-code_ modularization where these teams might interact via `Terraform` in order to keep the whole _Cloud_ platform management in a single `Terraform` invokation.
 
@@ -35,14 +35,14 @@ This demo is a single use-case implying:
 Let's say that a **dev** team is in charge of developping application that farm a **Pokemon** (either Carapuce, or Pikachu, or whatever…).  
 At the end of the day, we have multiple applications that are _mostly the same on a technical architecture point of view_:
 
-* all are packaged and deployed as `Docker` container
-* all are Web application exposed via a _regular_ endpoint
+- all are packaged and deployed as `Docker` container
+- all are Web application exposed via a _regular_ endpoint
 
 But they may also rely on specific development with differences in their architecture:
 
-* one needs a _database_
-* another one needs an object storage
-* another one requires specific _endpoints_…
+- one needs a _database_
+- another one needs an object storage
+- another one requires specific _endpoints_…
 
 And the **ops** team is willing to manage a consistent _Cloud_ platform thanks to `Terraform` _infra-as-code_ single repository of code.  
 We'll see how to use `Terraform` **modules** to do so…  
@@ -58,8 +58,8 @@ See [lab-setup.md](documentation/lab-setup.md).
 In this step, we deploy our 2 first pokemons: **Bulbizarre** and **Pikachu**.  
 To do so, we create for each pokemon `Google Cloud Run` resources:
 
-* a service
-* and _IAM_ credentials to authorize public requests to this service
+- a service
+- and _IAM_ credentials to authorize public requests to this service
 
 ### How do we deploy?
 
@@ -94,8 +94,8 @@ terraform_0.12.30 apply --auto-approve
 
 We describe `Google Cloud Run` resources **once** :tada: in the module :
 
-* a service
-* and _IAM_ credentials to authorize public requests to this service
+- a service
+- and _IAM_ credentials to authorize public requests to this service
 
 and we invoke them as many times as we have new pokemons to deploy.  
 `Terraform` code is replicated for each pokemon with variations on resource names.  
@@ -103,8 +103,8 @@ Not really scalable.
 
 The down sides are:
 
-* for every new pokemon, we have to write a new block of code to invoke the module instance and to value variables in a proper way. In other word, every time a **dev** team deliver a new pokemon, the **ops** team has to alter its `Terraform` code.
-* all module invokation has to be the same because of variable inputs/outputs to the module. We cannot have 2 invokations of the module with very different set of variables
+- for every new pokemon, we have to write a new block of code to invoke the module instance and to value variables in a proper way. In other word, every time a **dev** team deliver a new pokemon, the **ops** team has to alter its `Terraform` code.
+- all module invokation has to be the same because of variable inputs/outputs to the module. We cannot have 2 invokations of the module with very different set of variables
 
 ### What if?
 
@@ -132,15 +132,15 @@ To be more specific, we duplicate the module so that we can easily compare the b
 For a single pokemon, in a single invokation of the `pokemon_iterator` module, we pass all the variables _via_ a map named `pokemon_attributes`.  
 This has several benefits:
 
-* invokating a module is quite of a rigid interface between the main Terraform code and the module. By using a map, this interface becomes **lazy-coupled**: we can have more entries in the map on the main code than are required in the module and _vice-versa_.
-* at scale, it is far easier to manipulate a map than several single variables
+- invokating a module is quite of a rigid interface between the main Terraform code and the module. By using a map, this interface becomes **lazy-coupled**: we can have more entries in the map on the main code than are required in the module and _vice-versa_.
+- at scale, it is far easier to manipulate a map than several single variables
 
 If we have more than one pokemon to deploy, we concatenate the maps of pokemon attributes in a map of maps named `pokemon_herd`.  
 To automatically invoke the `pokemon iterator` module **as many times** as we have new pokemons to deploy, we just loops in the list of keys of `pokemon_herd` map of maps.  
 
 The down side is:
 
-* for every new pokemon, we still have to write a new entry into this `pokemon_herd` map of maps.
+- for every new pokemon, we still have to write a new entry into this `pokemon_herd` map of maps.
 
 ### What if?
 
