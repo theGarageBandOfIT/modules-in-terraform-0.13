@@ -1,0 +1,58 @@
+FROM google/cloud-sdk:alpine
+
+# This image is forked from the ones you can find here: https://github.com/theGarageBandOfIT/infra-as-code-tools
+LABEL maintainer="Ludovic Piot <ludovic.piot@thegaragebandofit.com>"
+
+# Install prerequisites
+RUN apk add openssl git jq vim
+
+# GCP configuration
+WORKDIR /
+
+# GCP extra components install
+#RUN gcloud components install beta --quiet
+#RUN gcloud components install kubectl --quiet
+RUN gcloud components update --quiet && \
+
+# skim down the size of the install
+    gcloud components remove bq --quiet && \
+    rm -Rf /google-cloud-sdk/.install
+
+WORKDIR /usr/bin
+
+# Terraform vars
+# This is the latest Terraform 0.12 version
+ENV TERRAFORM_012=0.12.30
+# This is the latest Terraform 0.13 version
+ENV TERRAFORM_013=0.13.6
+# This is the latest Terraform 0.14 version
+ENV TERRAFORM_014=0.14.8
+
+# Terraform install
+ENV TERRAFORM_VERSION=${TERRAFORM_012}
+RUN wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    unzip ./terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    rm -f ./terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    mv ./terraform ./terraform_${TERRAFORM_VERSION}
+
+# Terraform install
+ENV TERRAFORM_VERSION=${TERRAFORM_013}
+RUN wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    unzip ./terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    rm -f ./terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    mv ./terraform ./terraform_${TERRAFORM_VERSION}
+
+# Terraform install
+ENV TERRAFORM_VERSION=${TERRAFORM_014}
+RUN wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    unzip ./terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    rm -f ./terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    mv ./terraform ./terraform_${TERRAFORM_VERSION}
+
+RUN ln -s ./terraform_${TERRAFORM_VERSION} ./terraform
+
+# Add Terraform autocompletion in BASH
+RUN touch ~/.bashrc && \
+    terraform --install-autocomplete
+
+ENTRYPOINT [ "/bin/bash" ]
