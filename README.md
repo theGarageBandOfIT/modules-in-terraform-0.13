@@ -90,3 +90,39 @@ The down sides are:
 ### What if?
 
 😎🏝 How cool might it be to give a list of pokemon and the `Terraform` code was able to iterate through it!
+
+## Step-3: iterating module invokations through a list
+
+:bulb: `Terraform` code is in [step-3](./step-3) folder.  
+In this step, we refactor our code so that we can invoke the pokemon module automatically as many times as we have entries in a list.  
+:warning: This code syntax is not available in `Terraform 0.12`: this is a new feature of `Terraform 0.13` and beyond.
+
+### How do we deploy?
+
+```bash
+cd /code/terraform/step-3
+terraform_0.13.6 init
+terraform_0.13.6 plan
+terraform_0.13.6 apply --auto-approve
+```
+
+### What do we see?
+
+To be more specific, we duplicate the module so that we can easily compare the behaviour, invokation syntaxes and embedded codes: the new module is names pokemon_iterator.  
+
+For a single pokemon, in a single invokation of the `pokemon_iterator` module, we pass all the variables _via_ a map named `pokemon_attributes`.  
+This has several benefits:
+
+* invokating a module is quite of a rigid interface between the main Terraform code and the module. By using a map, this interface becomes **lazy-coupled**: we can have more entries in the map on the main code than are required in the module and _vice-versa_.
+* at scale, it is far easier to manipulate a map than several single variables
+
+If we have more than one pokemon to deploy, we concatenate the maps of pokemon attributes in a map of maps named `pokemon_herd`.  
+To automatically invoke the `pokemon iterator` module **as many times** as we have new pokemons to deploy, we just loops in the list of keys of `pokemon_herd` map of maps.  
+
+The down side is:
+
+* for every new pokemon, we still have to write a new entry into this `pokemon_herd` map of maps.
+
+### What if?
+
+😎🏝 How cool might it be to dynamically reconstruct this list of pokemons by retrieving a single file the dev teams might published when a new pokemon is ready to deploy!
