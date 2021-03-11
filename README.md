@@ -55,3 +55,38 @@ terraform_0.12.30 apply --auto-approve
 
 `Terraform` code is replicated for each pokemon with variations on resource names.  
 Not really scalable.
+
+## Step-2: introducing module
+
+:bulb: `Terraform` code is in [step-2](./step-2) folder.  
+In this step, we're adding 2 more pokemons: **Salamèche** and **Carapuce**.  
+The difference here is that we use a `Terraform` **module**, to factorize our `Terraform` code.
+
+### How do we deploy?
+
+```bash
+cd /code/terraform/step-2
+terraform_0.12.30 init
+terraform_0.12.30 plan
+terraform_0.12.30 apply --auto-approve
+```
+
+### What do we see?
+
+We describe `Google Cloud Run` resources **once** :tada: in the module :
+
+* a service
+* and _IAM_ credentials to authorize public requests to this service
+
+and we invoke them as many times as we have new pokemons to deploy.  
+`Terraform` code is replicated for each pokemon with variations on resource names.  
+Not really scalable.
+
+The down sides are:
+
+* for every new pokemon, we have to write a new block of code to invoke the module instance and to value variables in a proper way. In other word, every time a **dev** team deliver a new pokemon, the **ops** team has to alter its `Terraform` code.
+* all module invokation has to be the same because of variable inputs/outputs to the module. We cannot have 2 invokations of the module with very different set of variables
+
+### What if?
+
+😎🏝 How cool might it be to give a list of pokemon and the `Terraform` code was able to iterate through it!
