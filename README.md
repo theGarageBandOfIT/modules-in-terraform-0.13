@@ -28,3 +28,30 @@ But they may also rely on specific development with differences in their archite
 And the **ops** team is willing to manage a consistent _Cloud_ platform thanks to `Terraform` _infra-as-code_ single repository of code.  
 We'll see how to use `Terraform` **modules** to do so…  
 And how the new module invokation syntax included in `Terraform 0.13` facilitates this…
+
+## How to set-up your lab for this demo?
+
+See [lab-setup.md](documentation/lab-setup.md).
+
+## Step-1: our 2 first pokemons
+
+:bulb: `Terraform` code is in [step-1](./step-1) folder.  
+In this step, we deploy our 2 first pokemons: **Bulbizarre** and **Pikachu**.  
+To do so, we create for each pokemon `Google Cloud Run` resources:
+
+* a service
+* and _IAM_ credentials to authorize public requests to this service
+
+### How do we deploy?
+
+```bash
+cd /code/terraform/step-1
+terraform_0.12.30 init
+terraform_0.12.30 plan
+terraform_0.12.30 apply --auto-approve
+```
+
+### What do we see?
+
+`Terraform` code is replicated for each pokemon with variations on resource names.  
+Not really scalable.
