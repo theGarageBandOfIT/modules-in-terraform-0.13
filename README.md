@@ -2,6 +2,25 @@
 
 :bulb: This demo is to explain how the new `Terraform 0.13` syntax enhance the way we can use modules in `Terraform`.
 
+- [Modules in Terraform 0.13+](#modules-in-terraform-013)
+  - [Overview](#overview)
+  - [How to set-up your lab for this demo?](#how-to-set-up-your-lab-for-this-demo)
+  - [Step-1: our 2 first pokemons](#step-1-our-2-first-pokemons)
+    - [How do we deploy?](#how-do-we-deploy)
+    - [What do we see?](#what-do-we-see)
+  - [Step-2: introducing module](#step-2-introducing-module)
+    - [How do we deploy?](#how-do-we-deploy-1)
+    - [What do we see?](#what-do-we-see-1)
+    - [What if?](#what-if)
+  - [Step-3: iterating module invokations through a list](#step-3-iterating-module-invokations-through-a-list)
+    - [How do we deploy?](#how-do-we-deploy-2)
+    - [What do we see?](#what-do-we-see-2)
+    - [What if?](#what-if-1)
+  - [Step-4: iterating module invokations through a list of JSON files](#step-4-iterating-module-invokations-through-a-list-of-json-files)
+    - [How do we deploy?](#how-do-we-deploy-3)
+    - [What do we see?](#what-do-we-see-3)
+    - [What's next?](#whats-next)
+
 ## Overview
 
 This demo is a single use-case implying:
@@ -126,3 +145,35 @@ The down side is:
 ### What if?
 
 😎🏝 How cool might it be to dynamically reconstruct this list of pokemons by retrieving a single file the dev teams might published when a new pokemon is ready to deploy!
+
+## Step-4: iterating module invokations through a list of JSON files
+
+:bulb: `Terraform` code is in [step-4](./step-4) folder.  
+In this step, we consider that dev teams will publish a single `JSON` file for every new to-be-deployed pokemon.  
+In this file, we find the _key-value pairs_ that formerly constituted the `pokemon_attributes` map of each pokemon.  
+Here, we consider that the files have already been retrieved (through CI/CD automation) into a local folder named `pokemon_corral`.
+
+:warning: This step cleans up all the former step-[0-2] pokemon creation.
+
+### How do we deploy?
+
+```bash
+cd /code/terraform/step-4
+terraform_0.13.6 init
+terraform_0.13.6 plan
+terraform_0.13.6 apply --auto-approve
+```
+
+### What do we see?
+
+We finally made it: in this version of code, devs only have to publish a `JSON` file with their pokemon attributes et voilà!  
+On **ops** side, once this `JSON` file has been retrieved, any new `plan/apply` of `Terraform` code will proceed to creation of `GCP` resources for this new pokemon.  
+
+### What's next?
+
+By decoupling platform management and instance needs that way, we may think about having a pokemon iterator which is capable of handling heterogeneous cases:
+
+- being able to publish a new version of an already existing pokemon (a simple new `version` entry in the `pokemon_attributes` map should do the job)
+- being able to create a kind of blueprint or another depending of a _toggle switch_ variable in `pokemon_attributes`. Ex: a pokemon that needs a DB or not. A pokemon that needs the V2 of the module (with a proxy to route to each Cloud Run service)
+
+_To be continued_…

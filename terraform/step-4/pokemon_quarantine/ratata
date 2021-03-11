@@ -1,0 +1,4 @@
+{"name"         : "ratata",
+"location"     : "europe-west1",
+"docker_image" : "eu.gcr.io/modules-terraform-013/hello-ratata"
+}
